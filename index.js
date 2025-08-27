@@ -99,20 +99,22 @@ async function getCombustivelPrevisao() {
   }
 }
 // Configuração dos horários de execução
-const HORARIO_METEOROLOGIA = { hora: 21, minuto: 0 };  // 21:00 todos os dias
-const HORARIO_COMBUSTIVEL = { hora: 21, minuto: 0 };   // 21:00 apenas aos sábados
+const HORARIO_METEOROLOGIA = { hora: 21, minuto: 10 };  // 18:00 todos os dias
+const HORARIO_COMBUSTIVEL = { hora: 13, minuto: 0 };   // 13:00 apenas aos sábados
 
 let ultimaExecucaoCombustivel = null;
 let ultimaExecucaoMeteorologia = null;
 
-// Função para verificar se deve executar meteorologia (todos os dias às 21:00)
+// Função para verificar se deve executar meteorologia (todos os dias às 18:00)
 function deveExecutarMeteorologia(ultimaExecucao) {
   const agora = new Date();
-  const horaAtual = agora.getHours();
-  const minutoAtual = agora.getMinutes();
+  // Usar horário de Lisboa/Portugal (GMT+1/GMT+2)
+  const agoraPortugal = new Date(agora.toLocaleString("en-US", {timeZone: "Europe/Lisbon"}));
+  const horaAtual = agoraPortugal.getHours();
+  const minutoAtual = agoraPortugal.getMinutes();
   
   if (horaAtual === HORARIO_METEOROLOGIA.hora && minutoAtual === HORARIO_METEOROLOGIA.minuto) {
-    const hoje = agora.toDateString(); // Data de hoje
+    const hoje = agoraPortugal.toDateString(); // Data de hoje em Portugal
     if (ultimaExecucao !== hoje) {
       return hoje;
     }
@@ -120,16 +122,18 @@ function deveExecutarMeteorologia(ultimaExecucao) {
   return null;
 }
 
-// Função para verificar se deve executar combustíveis (apenas sábados às 21:00)
+// Função para verificar se deve executar combustíveis (apenas sábados às 13:00)
 function deveExecutarCombustivel(ultimaExecucao) {
   const agora = new Date();
-  const horaAtual = agora.getHours();
-  const minutoAtual = agora.getMinutes();
-  const diaSemana = agora.getDay(); // 0=Domingo, 1=Segunda, ..., 6=Sábado
+  // Usar horário de Lisboa/Portugal (GMT+1/GMT+2)
+  const agoraPortugal = new Date(agora.toLocaleString("en-US", {timeZone: "Europe/Lisbon"}));
+  const horaAtual = agoraPortugal.getHours();
+  const minutoAtual = agoraPortugal.getMinutes();
+  const diaSemana = agoraPortugal.getDay(); // 0=Domingo, 1=Segunda, ..., 6=Sábado
   
   // Verifica se é sábado (6) e se é a hora correta
   if (diaSemana === 6 && horaAtual === HORARIO_COMBUSTIVEL.hora && minutoAtual === HORARIO_COMBUSTIVEL.minuto) {
-    const hoje = agora.toDateString(); // Data de hoje
+    const hoje = agoraPortugal.toDateString(); // Data de hoje em Portugal
     if (ultimaExecucao !== hoje) {
       return hoje;
     }
@@ -141,14 +145,16 @@ function deveExecutarCombustivel(ultimaExecucao) {
 async function iniciarMonitoramento() {
   console.log("🚀 Iniciando monitoramento...");
   console.log("📋 Configuração:");
-  console.log("   🌤️  Meteorologia: Todos os dias às 21:00");
-  console.log("   ⛽ Combustíveis: Apenas aos sábados às 21:00");
+  console.log("   🌤️  Meteorologia: Todos os dias às 18:00 (Horário de Portugal)");
+  console.log("   ⛽ Combustíveis: Apenas aos sábados às 13:00 (Horário de Portugal)");
   
   while (true) {
     try {
       const agora = new Date();
-      const horaFormatada = agora.toLocaleTimeString('pt-PT');
-      const diaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][agora.getDay()];
+      // Usar horário de Lisboa/Portugal para exibição
+      const agoraPortugal = new Date(agora.toLocaleString("en-US", {timeZone: "Europe/Lisbon"}));
+      const horaFormatada = agoraPortugal.toLocaleTimeString('pt-PT');
+      const diaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][agoraPortugal.getDay()];
       
       // Verifica meteorologia (todos os dias às 21:00)
       const executarMeteorologia = deveExecutarMeteorologia(ultimaExecucaoMeteorologia);
@@ -167,8 +173,8 @@ async function iniciarMonitoramento() {
       }
       
       // Log de status a cada 10 minutos (apenas para debug, pode remover)
-      if (agora.getMinutes() % 10 === 0 && agora.getSeconds() < 30) {
-        console.log(`⏰ [${diaSemana} ${horaFormatada}] Monitoramento ativo...`);
+      if (agoraPortugal.getMinutes() % 10 === 0 && agoraPortugal.getSeconds() < 30) {
+        console.log(`⏰ [${diaSemana} ${horaFormatada}] Monitoramento ativo... (Horário de Portugal)`);
       }
       
       // Aguarda 30 segundos antes da próxima verificação
