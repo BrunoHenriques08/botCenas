@@ -99,8 +99,14 @@ async function getCombustivelPrevisao() {
   }
 }
 // Configuração dos horários de execução
-const HORARIO_METEOROLOGIA = { hora: 21, minuto: 10 };  // 18:00 todos os dias
-const HORARIO_COMBUSTIVEL = { hora: 13, minuto: 0 };   // 13:00 apenas aos sábados
+const HORARIO_METEOROLOGIA = { 
+  hora: parseInt(process.env.HORARIO_METEOROLOGIA_HORA) || 21, 
+  minuto: parseInt(process.env.HORARIO_METEOROLOGIA_MINUTO) || 10 
+};
+const HORARIO_COMBUSTIVEL = { 
+  hora: parseInt(process.env.HORARIO_COMBUSTIVEL_HORA) || 13, 
+  minuto: parseInt(process.env.HORARIO_COMBUSTIVEL_MINUTO) || 0 
+};
 
 let ultimaExecucaoCombustivel = null;
 let ultimaExecucaoMeteorologia = null;
@@ -145,8 +151,8 @@ function deveExecutarCombustivel(ultimaExecucao) {
 async function iniciarMonitoramento() {
   console.log("🚀 Iniciando monitoramento...");
   console.log("📋 Configuração:");
-  console.log("   🌤️  Meteorologia: Todos os dias às 18:00 (Horário de Portugal)");
-  console.log("   ⛽ Combustíveis: Apenas aos sábados às 13:00 (Horário de Portugal)");
+  console.log(`   🌤️  Meteorologia: Todos os dias às ${HORARIO_METEOROLOGIA.hora.toString().padStart(2, '0')}:${HORARIO_METEOROLOGIA.minuto.toString().padStart(2, '0')} (Horário de Portugal)`);
+  console.log(`   ⛽ Combustíveis: Apenas aos sábados às ${HORARIO_COMBUSTIVEL.hora.toString().padStart(2, '0')}:${HORARIO_COMBUSTIVEL.minuto.toString().padStart(2, '0')} (Horário de Portugal)`);
   
   while (true) {
     try {
