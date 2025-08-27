@@ -1,0 +1,16 @@
+{
+  "data_atualizacao": "22 de Agosto de 2025",
+  "periodo_previsao": "25 a 31 de agosto",
+  "combustiveis": {
+    "gasoleo": {
+      "direcao": "subir",
+      "variacao_cents": "0,5",
+      "preco_eur": "0,005"
+    },
+    "gasolina": {
+      "direcao": "subir",
+      "variacao_cents": "0,5",
+      "preco_eur": "0,005"
+    }
+  }
+}
